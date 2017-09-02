@@ -43,16 +43,15 @@ App = {
 
   bindEvents: function() {
 
-    $(document).on('click', '#card1', function()
+    $(document).on('click', '.cardButton', function()
       {
-        
-        App.getCard();
+        App.getCard($(this));
         
       });
   
   },
 
-  getCard: function() {
+  getCard: function(button) {
     
     App.contracts.Baccara.deployed().then(function(instance){
       BaccaraInstance = instance;
@@ -65,8 +64,12 @@ App = {
 
       }).then(function(card) {
         console.log(card);
-        $('#address').html(card.c[0]);
-        $('#card1').css('background', 'url(images/10-of-hearts.png)');
+        var id = card.c[0]%13 + 1;
+
+        $('#address').html(id);
+        var image = 'url(images/' + id + '.png)';
+        button.css('background', image);
+        button.prop('disabled',true);
     }, function(reason) {
       console.log(reason);
     }) ;
