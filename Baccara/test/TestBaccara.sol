@@ -6,7 +6,7 @@ import "../contracts/Baccara.sol";
 
 contract TestBaccara {
   Baccara baccara = Baccara(DeployedAddresses.Baccara());
-    function testUserCanAdoptPet() {
+    function testCanCreateNewPlayer() {
       bool success = baccara.newPlayer();
 
      
