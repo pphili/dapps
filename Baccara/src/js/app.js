@@ -12,69 +12,77 @@ App = {
 
   initWeb3: function() {
 
-    if (typeof web3 != 'undefined')
-    {
+    if (typeof web3 != 'undefined') {
         App.web3Provider = web3.currentProvider;
         web3 = new Web3(web3.currentProvider);
+    } else {
+    //set provider
+    App.web3Provider = new web3.providers.HttpProvider('http://localhost:8545');
+    web3 = new Web3(App.web3Provider);
     }
-    else
-    {
-  //set provider
-  App.web3Provider = new web3.providers.HttpProvider('http://localhost:8545');
-  web3 = new Web3(App.web3Provider);
-    }
-    
-
     return App.initContract();
   },
 
   initContract: function() {
 
-  $.getJSON('Baccara.json', function(data){
+    $.getJSON('Baccara.json', function(data){
 
-    // get contract artifacts
-    var BaccaraArtifact = data;
-    App.contracts.Baccara= TruffleContract(BaccaraArtifact);  
+      // get contract artifacts
+      var BaccaraArtifact = data;
+      App.contracts.Baccara= TruffleContract(BaccaraArtifact);  
 
-    //set provider
-    App.contracts.Baccara.setProvider(App.web3Provider);  
-  })
+      //set provider
+      App.contracts.Baccara.setProvider(App.web3Provider);  
+    })
 
     return App.bindEvents();
   },
 
   bindEvents: function() {
+    $(document).on('click', '#sitButton', function() {
+        App.sit($(this));
+    });
 
-    $(document).on('click', '.cardButton', function()
-      {
-        App.getInitialCards();
-        
-      });
+    $(document).on('click', '.cardButton', function() {
+        App.addCard($(this));
+    });
   
   },
 
-  getInitialCards: function() {
-    
+  sit: function(button) {
     App.contracts.Baccara.deployed().then(function(instance){
       BaccaraInstance = instance;
-      return BaccaraInstance.updateInitialCards({from:web3.eth.coinbase,
+      return BaccaraInstance.newPlayer({from:web3.eth.coinbase,
         gas: 100000});
       
     }).then(function (value){
-        return BaccaraInstance.getInitialCards.call();
+        button.prop('disabled',true);
+        button.hide();
+        $('.cardButton').show();
+        $('.cardButton').prop('disabled',false);
+      })
 
-      }).then(function(card) {
+  },
+  addCard: function(button) {
+    
+    App.contracts.Baccara.deployed().then(function(instance){
+      BaccaraInstance = instance;
+      return BaccaraInstance.addCard({from:web3.eth.coinbase,
+        gas: 100000});
+      
+    }).then(function (value){
+        return BaccaraInstance.getCards.call();
+
+      }).then(function(cards) {
         
-        var card1 = card.c[0]%13 + 1;
-        var card2 = card.c[1]%13 + 1;
-        var result = card.c[2];
+        var card = cards[0]%13 + 1;
+        var total = BaccaraInstance.getTotal(cards);
         
-        var image = 'url(images/' + card1 + '.png)';
-        $('#card1').css('background', 'url(images/' + card1 + '.png)');
-        $('#card1').prop('disabled',true);
-        $('#card2').css('background', 'url(images/' + card2 + '.png)');
-        $('#card2').prop('disabled',true);
-        $('#result').html(result);
+        var image = 'url(images/' + card + '.png)';
+        button.css('background', image);
+        button.prop('disabled',true);
+        $('#total').html(total);
+
     }, function(reason) {
       console.log(reason);
     }) ;

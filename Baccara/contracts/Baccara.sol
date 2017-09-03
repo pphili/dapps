@@ -37,9 +37,7 @@ contract Baccara
         require(!isPlaying(msg.sender)); 
         players[msg.sender].isPlaying = true;
         players[msg.sender].total = 0;
-        for (uint i = 0; i < players[msg.sender].cards.length; i++) {
-            players[msg.sender].cards[i] = 0;
-        }
+        players[msg.sender].cards = [0,0,0];
         return true;
     }
 
@@ -55,6 +53,7 @@ contract Baccara
             if(players[msg.sender].cards[i] == 0) {
                 players[msg.sender].cards[i] = deck[deckIndex];
                 deckIndex++;
+                break;
             }
         }
         uint pTotal = getTotal(players[msg.sender].cards);
@@ -66,12 +65,12 @@ contract Baccara
         return true;
     }
 
-    function getCards() public returns(uint[3]) {
+    function getCards() public constant returns(uint[3]) {
         uint[3] memory cards = players[msg.sender].cards;
         return cards;
     }
 
-    function getMyPlayer() private returns(Player) {
+    function getMyPlayer() private constant returns(Player) {
         return players[msg.sender];
     }
 
@@ -79,24 +78,26 @@ contract Baccara
         return players[addr].isPlaying;
     }
 
-    function getWinner() public returns(address) {
+    function getWinner() public constant returns(address) {
         return winningAddress;
     }
 
-    function getDeck() private returns(uint[52]) {
+    function getDeck() private constant returns(uint[52]) {
         return deck;
     }
 
-    function getTotal(uint[3] cards) public returns(uint) {
+    function getTotal(uint[3] cards) public constant returns(uint) {
         uint total = 0;
+        uint value;
         for (uint i = 0; i < cards.length; i++) {
-            if (cards[i] > 10) total += 10;
-            else total += cards[i];
+            value = cards[i]%13 + 1;
+            if (value> 10) total += 10;
+            else total += value;
         }
         return total%10;
     }
 
-    function convertHashToInt(address a, uint b) private returns(uint) {
+    function convertHashToInt(address a, uint b) private constant returns(uint) {
         //find a way to pseudorandomly initialize the deck
         return addmod(a.balance * b, block.timestamp + b, 52);
     }

@@ -16,9 +16,10 @@ contract TestBaccara {
       bool successCard = baccara.addCard();
       Assert.equal(successCard, true, "New card added");
     }
-    
+
     function testCanGetCards() {
       uint[3] memory cards = baccara.getCards();
+      log
       Assert.equal(cards.length, 3, "Player has 3 cards");
     }
 }
