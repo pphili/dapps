@@ -2,66 +2,115 @@ pragma solidity ^0.4.4;
 
 contract Baccara 
 {
-
-    bool[52] public deck;
-    uint public drawnCards;
-    uint card;
-
+    struct Player {
+      uint[] cards;
+      uint result;
+      bool isPlaying;
+    }
+    mapping (address => Player) players;
+    
+    uint[52] private deck;
+    uint private deckIndex;
+    address public winningAddress;
+    
+        
     /*In the contructor we initialize the deck of cards. 
     Each card has a number associated, just taking them in order, hearts, diamonds, clubs, spades.
-    The deck array is inialized with all false. When a card is given, the corresponding bool is set to true.
+    The deck array is inialized randomly.
     */
     function Baccara() {
         shuffle();
     }
-    
-    function updateCard() public {
-        address playerAddress;
-        uint j;
-
-        playerAddress = msg.sender;
-        j = 0;
-
-        while (true) {
-            card = convertHashToCard(playerAddress, j); 
-            j++;
-            if (deck[card] == false) {
-                break;
-            }
-        }
-
-        drawnCards += 1;
-        deck[card] = true;
-
-        if(drawnCards == deck.length) {
-            shuffle();
-        }
-
-    }
-
-    function getCard() public returns(uint) {
-        return card;
-    }
-
-    function getDeck() returns(bool[52]) {
-        return deck;
-    }
 
     function shuffle() private {
         for (uint i = 0; i < deck.length; i++) {
-            deck[i] = false;
+            uint j = convertHashToInt(msg.sender, i);
+            deck[i] = j + 1;
+            deck[j] = i + 1;
         }
-        drawnCards = 0;
+        deckIndex = 0;
+    }
+ 
+    function newPlayer() public returns(bool success) {
+        require(!isPlaying(msg.sender)); 
+        players[msg.sender].isPlaying = true;
+        players[msg.sender].result = 0;
+        return true;
     }
 
-    function total(int card1, int card2) returns(int) {
-        return (card1 + card2)%10;
+    function deletePlayer(address addr) private returns(bool success) {
+        require(isPlaying(addr));
+        players[addr].isPlaying = false;
+        return true;
     }
 
-    function convertHashToCard(address a, uint b) private returns(uint) {
+    function addCard() public returns(bool success) {        
+        require(isPlaying(msg.sender));
+        if (players[msg.sender].cards.length <=3) {
+            players[msg.sender].cards.push(deck[deckIndex]);
+            deckIndex++;
+        }
+        return true;
+    }
 
+    function getCards() private returns(uint[]) {
+        return players[msg.sender].cards;
+    }
+
+    function getMyPlayer() private returns(Player) {
+        return players[msg.sender];
+    }
+
+    function isPlaying(address addr) private constant returns(bool isIndeed) {
+        return players[addr].isPlaying;
+    }
+
+    function getWinner() returns(address) {
+        return winningAddress;
+    }
+
+    function getDeck() private returns(uint[52]) {
+        return deck;
+    }
+
+    function getTotal(uint[] cards) public returns(uint) {
+        uint total = 0;
+        for (uint i = 0; i < cards.length; i++) {
+            if (cards[i] > 10) total += 10;
+            else total += cards[i];
+        }
+        return total%10;
+    }
+
+    function convertHashToInt(address a, uint b) private returns(uint) {
+        //find a way to pseudorandomly initialize the deck
         return addmod(a.balance * b, block.timestamp + b, 52);
-
-
     }
 }
+
+
+/*
+Other possibility for data struct. 
+struct Player {
+      //address addr;
+      address addr;
+      uint card1; //Could use uint[3] hand?
+      uint card2;
+      uint card3;
+      uint result;
+      bool isPlaying;
+    }
+    Player[] private players;
+
+
+function newPlayer(address addr, uint entityData) public returns(uint rowNumber) {
+            Player memory newPlayer;
+            newPlayer.addr = addr;
+            newPlayer.entityData  = entityData;
+            return players.push(newPlayer)-1;
+        }
+
+        function getPlayerCount() public constant returns(uint entityCount) {
+            return players.length;
+        }
+*/

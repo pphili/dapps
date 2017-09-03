@@ -2,6 +2,8 @@ App = {
 
   web3Provider: null,
   contracts: {},
+  card1: 0,
+  card2: 0,
 
   init: function() {
     
@@ -45,31 +47,34 @@ App = {
 
     $(document).on('click', '.cardButton', function()
       {
-        App.getCard($(this));
+        App.getInitialCards();
         
       });
   
   },
 
-  getCard: function(button) {
+  getInitialCards: function() {
     
     App.contracts.Baccara.deployed().then(function(instance){
       BaccaraInstance = instance;
-      return BaccaraInstance.updateCard({from:web3.eth.coinbase,
+      return BaccaraInstance.updateInitialCards({from:web3.eth.coinbase,
         gas: 100000});
       
     }).then(function (value){
-        console.log(value);
-        return BaccaraInstance.getCard.call();
+        return BaccaraInstance.getInitialCards.call();
 
       }).then(function(card) {
-        console.log(card);
-        var id = card.c[0]%13 + 1;
-
-        $('#address').html(id);
-        var image = 'url(images/' + id + '.png)';
-        button.css('background', image);
-        button.prop('disabled',true);
+        
+        var card1 = card.c[0]%13 + 1;
+        var card2 = card.c[1]%13 + 1;
+        var result = card.c[2];
+        
+        var image = 'url(images/' + card1 + '.png)';
+        $('#card1').css('background', 'url(images/' + card1 + '.png)');
+        $('#card1').prop('disabled',true);
+        $('#card2').css('background', 'url(images/' + card2 + '.png)');
+        $('#card2').prop('disabled',true);
+        $('#result').html(result);
     }, function(reason) {
       console.log(reason);
     }) ;
