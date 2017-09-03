@@ -3,14 +3,15 @@ pragma solidity ^0.4.4;
 contract Baccara 
 {
     struct Player {
-      uint[] cards;
-      uint result;
+      uint[3] cards;
+      uint total;
       bool isPlaying;
     }
     mapping (address => Player) players;
     
     uint[52] private deck;
     uint private deckIndex;
+    uint public winningTotal;
     address public winningAddress;
     
         
@@ -20,6 +21,7 @@ contract Baccara
     */
     function Baccara() {
         shuffle();
+        winningTotal = 0;
     }
 
     function shuffle() private {
@@ -34,7 +36,10 @@ contract Baccara
     function newPlayer() public returns(bool success) {
         require(!isPlaying(msg.sender)); 
         players[msg.sender].isPlaying = true;
-        players[msg.sender].result = 0;
+        players[msg.sender].total = 0;
+        for (uint i = 0; i < players[msg.sender].cards.length; i++) {
+            players[msg.sender].cards[i] = 0;
+        }
         return true;
     }
 
@@ -46,15 +51,24 @@ contract Baccara
 
     function addCard() public returns(bool success) {        
         require(isPlaying(msg.sender));
-        if (players[msg.sender].cards.length <=3) {
-            players[msg.sender].cards.push(deck[deckIndex]);
-            deckIndex++;
+        for (uint i = 0; i < players[msg.sender].cards.length; i++) {
+            if(players[msg.sender].cards[i] == 0) {
+                players[msg.sender].cards[i] = deck[deckIndex];
+                deckIndex++;
+            }
+        }
+        uint pTotal = getTotal(players[msg.sender].cards);
+        players[msg.sender].total = pTotal;
+        if(pTotal > winningTotal) {
+            winningTotal = pTotal;
+            winningAddress = msg.sender;
         }
         return true;
     }
 
-    function getCards() private returns(uint[]) {
-        return players[msg.sender].cards;
+    function getCards() public returns(uint[3]) {
+        uint[3] memory cards = players[msg.sender].cards;
+        return cards;
     }
 
     function getMyPlayer() private returns(Player) {
@@ -65,7 +79,7 @@ contract Baccara
         return players[addr].isPlaying;
     }
 
-    function getWinner() returns(address) {
+    function getWinner() public returns(address) {
         return winningAddress;
     }
 
@@ -73,7 +87,7 @@ contract Baccara
         return deck;
     }
 
-    function getTotal(uint[] cards) public returns(uint) {
+    function getTotal(uint[3] cards) public returns(uint) {
         uint total = 0;
         for (uint i = 0; i < cards.length; i++) {
             if (cards[i] > 10) total += 10;
@@ -97,7 +111,7 @@ struct Player {
       uint card1; //Could use uint[3] hand?
       uint card2;
       uint card3;
-      uint result;
+      uint total;
       bool isPlaying;
     }
     Player[] private players;
