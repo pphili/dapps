@@ -10,8 +10,8 @@ contract Baccara
     mapping (address => Player) players;
     
     uint[52] private deck;
-    uint private deckIndex;
-    uint public winningTotal;
+    uint private deckIndex = 0;
+    uint public winningTotal = 0;
     address public winningAddress;
     
         
@@ -20,54 +20,61 @@ contract Baccara
     The deck array is inialized randomly.
     */
     function Baccara() {
-        shuffle();
-        winningTotal = 0;
+        deck = shuffle(deck);
     }
 
-    function shuffle() private {
-        for (uint i = 0; i < deck.length; i++) {
+    function shuffle(uint[52] _deck) private returns(uint[52]) {
+        for (uint i = 0; i < _deck.length; i++) {
             uint j = convertHashToInt(msg.sender, i);
-            deck[i] = j + 1;
-            deck[j] = i + 1;
+            _deck[i] = j + 1;
+            _deck[j] = i + 1;
         }
-        deckIndex = 0;
+        return _deck;
     }
  
-    function newPlayer() public returns(bool success) {
-        require(!isPlaying(msg.sender)); 
+    function newPlayer() public returns(bool) {
+        //require(!isPlaying(msg.sender)); gonna use require after Metropolis
+        if (isPlaying(msg.sender)) return false;
         players[msg.sender].isPlaying = true;
-        players[msg.sender].total = 0;
-        players[msg.sender].cards = [0,0,0];
+        players[msg.sender].cards = [addCard(), addCard(), 0];
+        updateWinner(msg.sender);
         return true;
     }
 
-    function deletePlayer(address addr) private returns(bool success) {
-        require(isPlaying(addr));
+    function deletePlayer(address addr) private returns(bool) {
+        //require(isPlaying(addr));
+        if (!isPlaying(msg.sender)) return false;
         players[addr].isPlaying = false;
         return true;
     }
 
-    function addCard() public returns(bool success) {        
-        require(isPlaying(msg.sender));
-        for (uint i = 0; i < players[msg.sender].cards.length; i++) {
-            if(players[msg.sender].cards[i] == 0) {
-                players[msg.sender].cards[i] = deck[deckIndex];
-                deckIndex++;
-                break;
-            }
-        }
-        uint pTotal = getTotal(players[msg.sender].cards);
-        players[msg.sender].total = pTotal;
-        if(pTotal > winningTotal) {
-            winningTotal = pTotal;
-            winningAddress = msg.sender;
-        }
+    function addCard() private returns(uint) {        
+        uint card = deck[deckIndex];
+        deckIndex++;
+        return card;
+    }
+
+    function addExtraCard() public returns(bool) {        
+        //require(isPlaying(msg.sender));
+        if (!isPlaying(msg.sender)) return false;
+        if (players[msg.sender].cards[2] != 0) return false;
+        players[msg.sender].cards[2] = addCard();
+        updateWinner(msg.sender);
         return true;
     }
 
+    function updateWinner(address addr) private {
+        players[addr].total = getTotal(players[addr].cards);
+        if(players[addr].total > winningTotal) {
+            winningTotal = players[addr].total;
+            winningAddress = addr;
+        }   
+
+    }
+
     function getCards() public constant returns(uint[3]) {
-        uint[3] memory cards = players[msg.sender].cards;
-        return cards;
+        //require(isPlaying(msg.sender)); 
+        return players[msg.sender].cards;
     }
 
     function getMyPlayer() private constant returns(Player) {
@@ -82,16 +89,19 @@ contract Baccara
         return winningAddress;
     }
 
+    function hasWon() public constant returns(bool) {
+        return winningAddress == msg.sender;
+    }
+
     function getDeck() private constant returns(uint[52]) {
         return deck;
     }
 
     function getTotal(uint[3] cards) public constant returns(uint) {
         uint total = 0;
-        uint value;
-        for (uint i = 0; i < cards.length; i++) {
-            value = cards[i]%13 + 1;
-            if (value> 10) total += 10;
+        for (uint i = 0; i < 3; i++) {
+            uint value = addmod(cards[i], 0, 13);
+            if (value > 10) total += 10;
             else total += value;
         }
         return total%10;
@@ -99,7 +109,7 @@ contract Baccara
 
     function convertHashToInt(address a, uint b) private constant returns(uint) {
         //find a way to pseudorandomly initialize the deck
-        return addmod(a.balance * b, block.timestamp + b, 52);
+        return addmod((1+a.balance) * b , block.timestamp + b, 52);
     }
 }
 

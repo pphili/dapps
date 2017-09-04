@@ -44,7 +44,7 @@ App = {
     });
 
     $(document).on('click', '.cardButton', function() {
-        App.addCard($(this));
+        App.addExtraCard($(this));
     });
   
   },
@@ -53,36 +53,46 @@ App = {
     App.contracts.Baccara.deployed().then(function(instance){
       BaccaraInstance = instance;
       return BaccaraInstance.newPlayer({from:web3.eth.coinbase,
-        gas: 100000});
+        gas: 180000});
       
     }).then(function (value){
-        button.prop('disabled',true);
-        button.hide();
+      button.prop('disabled',true);
+      button.hide();
+      return BaccaraInstance.getCards();
+
+      }).then(function(cards) {
         $('.cardButton').show();
-        $('.cardButton').prop('disabled',false);
-      })
+        $('#card3').prop('disabled',false);
+        var card1 = cards[0]%13;
+        var card2 = cards[1]%13;       
+        $('#card1').css('background', 'url(images/' + card1 + '.png)');
+        $('#card2').css('background', 'url(images/' + card2 + '.png)');
+        return BaccaraInstance.getTotal(cards);
+      }).then(function(total) {
+        console.log(total);
+        $('#total').html(total.c[0]);
+      }, function(reason) {
+      console.log(reason);
+    })
 
   },
-  addCard: function(button) {
+  addExtraCard: function(button) {
     
     App.contracts.Baccara.deployed().then(function(instance){
       BaccaraInstance = instance;
-      return BaccaraInstance.addCard({from:web3.eth.coinbase,
-        gas: 100000});
+      return BaccaraInstance.addExtraCard({from:web3.eth.coinbase,
+        gas: 700000});
       
     }).then(function (value){
-        return BaccaraInstance.getCards.call();
-
-      }).then(function(cards) {
-        
-        var card = cards[0]%13 + 1;
-        var total = BaccaraInstance.getTotal(cards);
-        
-        var image = 'url(images/' + card + '.png)';
-        button.css('background', image);
         button.prop('disabled',true);
-        $('#total').html(total);
-
+        return BaccaraInstance.getCards();
+      }).then(function(cards) {
+        var card3 = cards[2]%13;
+        button.css('background', 'url(images/' + card3 + '.png)');
+        return BaccaraInstance.getTotal(cards);
+      }).then(function(total) {
+        console.log(total);
+        $('#total').html(total.c[0]);
     }, function(reason) {
       console.log(reason);
     }) ;
