@@ -1,3 +1,5 @@
+/*Baccara', by Rolamichi Bamsung*/
+
 pragma solidity ^0.4.4;
 
 contract Baccara 
@@ -77,9 +79,7 @@ contract Baccara
         return players[msg.sender].cards;
     }
 
-    function getMyPlayer() private constant returns(Player) {
-        return players[msg.sender];
-    }
+    
 
     function isPlaying(address addr) private constant returns(bool isIndeed) {
         return players[addr].isPlaying;
@@ -91,10 +91,6 @@ contract Baccara
 
     function hasWon() public constant returns(bool) {
         return winningAddress == msg.sender;
-    }
-
-    function getDeck() private constant returns(uint[52]) {
-        return deck;
     }
 
     function getTotal(uint[3] cards) public constant returns(uint) {
@@ -138,4 +134,13 @@ function newPlayer(address addr, uint entityData) public returns(uint rowNumber)
         function getPlayerCount() public constant returns(uint entityCount) {
             return players.length;
         }
+
+
+    function getDeck() private constant returns(uint[52]) {
+        return deck;
+    }
+
+    function getMyPlayer() private constant returns(Player) {
+        return players[msg.sender];
+    }
 */

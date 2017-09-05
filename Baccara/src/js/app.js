@@ -52,12 +52,18 @@ App = {
   sit: function(button) {
     App.contracts.Baccara.deployed().then(function(instance){
       BaccaraInstance = instance;
-      return BaccaraInstance.newPlayer({from:web3.eth.coinbase,
+      //first thest if the call is succesful
+      return BaccaraInstance.newPlayer.call();
+      
+    }).then(function (value){
+      //perform the real transaction
+      return BaccaraInstance.newPlayer.sendTransaction({from:web3.eth.coinbase,
         gas: 180000});
       
     }).then(function (value){
       button.prop('disabled',true);
       button.hide();
+      $('#total').show();
       return BaccaraInstance.getCards();
 
       }).then(function(cards) {
@@ -80,7 +86,10 @@ App = {
     
     App.contracts.Baccara.deployed().then(function(instance){
       BaccaraInstance = instance;
-      return BaccaraInstance.addExtraCard({from:web3.eth.coinbase,
+      return BaccaraInstance.addExtraCard.call();
+      
+    }).then(function (value){
+      return BaccaraInstance.addExtraCard.sendTransaction({from:web3.eth.coinbase,
         gas: 700000});
       
     }).then(function (value){
