@@ -26,7 +26,6 @@ contract Baccara
         if(drawnCards == deck.length) {
             shuffle();
         }
-        
         drawnCards++;       
 
     }
@@ -76,3 +75,20 @@ contract Baccara
 }
 
 
+function addCard() public returns(bool success) {        
+        require(isPlaying(msg.sender));
+        for (uint i = 0; i < players[msg.sender].cards.length; i++) {
+            if(players[msg.sender].cards[i] == 0) {
+                players[msg.sender].cards[i] = deck[deckIndex];
+                deckIndex++;
+                break;
+            }
+        }
+        uint pTotal = getTotal(players[msg.sender].cards);
+        players[msg.sender].total = pTotal;
+        if(pTotal > winningTotal) {
+            winningTotal = pTotal;
+            winningAddress = msg.sender;
+        }
+        return true;
+    }

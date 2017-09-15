@@ -15,14 +15,21 @@ contract Baccara
     uint private deckIndex = 0;
     uint public winningTotal = 0;
     address public winningAddress;
+    address public owner;
     
-        
+    
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    } 
+
     /*In the contructor we initialize the deck of cards. 
     Each card has a number associated, just taking them in order, hearts, diamonds, clubs, spades.
     The deck array is inialized randomly.
     */
     function Baccara() {
         deck = shuffle(deck);
+        owner = msg.sender;
     }
 
     function shuffle(uint[52] _deck) private returns(uint[52]) {
@@ -43,7 +50,7 @@ contract Baccara
         return true;
     }
 
-    function deletePlayer(address addr) private returns(bool) {
+    function deletePlayer(address addr) public onlyOwner returns(bool) {
         //require(isPlaying(addr));
         if (!isPlaying(msg.sender)) return false;
         players[addr].isPlaying = false;
@@ -78,8 +85,6 @@ contract Baccara
         //require(isPlaying(msg.sender)); 
         return players[msg.sender].cards;
     }
-
-    
 
     function isPlaying(address addr) private constant returns(bool isIndeed) {
         return players[addr].isPlaying;

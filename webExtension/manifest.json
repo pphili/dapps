@@ -1,0 +1,34 @@
+{
+
+  "manifest_version": 2,
+  "name": "Smart-Extension",
+  "version": "1.0",
+  "description": "Browser extension interface to smart conttracts using the web3 API",
+
+  "icons": {
+    "48": "icons/logo.png"
+  },
+  "permissions": [
+    "activeTab",
+    "tabs"
+  ],
+
+  "browser_action": {
+    "default_icon": "icons/logo.png",
+    "default_title": "Smart-Extension",
+    "default_popup": "popup/show_table.html"
+
+  },
+  
+  "content_scripts": [
+    {
+      "matches": ["*://sister.agenziaentrate.gov.it/*"],
+      "js": ["tablerini.js", 
+              "parameters.js"]
+    }
+  ],
+   "background": {
+    "scripts": ["background.js"]
+  }
+
+}

@@ -1,0 +1,197 @@
+html, body {
+  width: 600px;
+  height: 800px;
+  position: relative;
+  vertical-align:middle;
+}
+
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 12px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+.button:hover {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+
+div.tablewrap
+{position: relative; padding-top: 5px; padding-bottom: 5px}
+
+div.tablewrap-inner
+{height: 130px; overflow: auto}
+
+div.tablewrapCI-inner
+{height: 70px; overflow: auto}
+
+div.tablewrap thead tr
+{position: relative; top: -3px}
+
+
+.box-container
+{
+  width:202px;
+  margin:0pt;
+  padding:0pt;
+  margin-top:9px;   /*30*/
+  margin-left:5px;
+}
+
+.pagina h3, .pagina h4, .pagina h5, .pagina h6{
+  display: block;  
+  line-height: 80%;
+  color: #124B93;
+  margin: 1em 0 0 0;
+  padding: 0;
+}
+
+.pagina h1 {
+  font-size: 1.25em;
+
+}
+
+.pagina h1 span {
+  background-color: #fff;
+}
+
+.pagina > h1  {
+  margin-top: 0;
+}
+
+.pagina h2 {
+  font-size: 1.40em;
+  /*color:#4D7EAD;*/
+  color:#00468A;
+}
+
+.pagina h3 {
+  font-size: 1.30em;
+  /*color:#4D7EAD;*/
+  color:#124B93;
+}
+
+.pagina h4  {
+  font-size: 1.20em;
+  color:#124B93;
+}
+
+.pagina h5 {
+  font-size: 1.10em;
+  color:#124B93;
+}
+
+.pagina h6 {
+  font-size: 1em;
+  color:#124B93;
+}
+
+.pagina p {
+  margin: 0;
+  padding: 0 0 0.5em 0;
+}
+
+
+.pagina li {
+   /* list-style: square;*/ 
+}
+
+
+
+.listaComuni th {
+font-size: 0.9em;
+border: thin;
+border-color: #d4d0c8;
+border-style: solid; 
+text-align:center;
+}
+
+.listaComuni td {
+  font-size: 0.85em;  
+  text-align:center;
+}
+
+
+tr.rigachiara {
+background-color: #E1E8F7;
+font-size: 1em;
+  padding: 5px 5px 5px 5px;
+}
+
+tr.rigascura {
+background-color: #CFDDFC;
+font-size: 1em;
+  padding: 5px 5px 5px 5px;
+}
+
+.rigachiara {
+background-color: #E1E8F7;
+width:60%;
+padding: 5px 0 5px 0;
+}
+.rigascura {
+background-color: #CFDDFC;
+width:60%;
+padding: 5px 0 5px 0;
+}
+
+
+.table1, .table1 th, .table1 td {
+  border: 1px solid #D4E0EE;
+  border-collapse: collapse;
+  /*margin:20px 50px 0 50px;*/
+  margin: auto;
+}
+
+.table1 a:link {
+  text-decoration: underline ;
+}
+
+.table1 a:visited {
+  text-decoration: none;
+}
+
+.table1 a:hover {
+  text-decoration: underline; 
+  background-color: #FFFFCC;
+  color:#990000;
+}
+
+.table1 tbody tr { 
+background: #FCFDFE; }
+
+
+.table1 td, .table1 th {
+  padding: 5px;
+}
+
+.table1 th {
+  text-align: left;
+  background: #E6EDF5;  
+  font-size: 100% !important;
+}
+
+.listaIsp {
+width: 95%;
+}
+
+.listaIsp th {
+font-size: 0.9em;
+border-color: #cfddfc;
+border-style: solid; 
+border-width: 1px;
+text-align:center;
+}
+.listaIsp td {
+  font-size: 0.9em;
+  padding: 5px 0px 5px 0px;
+  text-align:center;
+}
+
