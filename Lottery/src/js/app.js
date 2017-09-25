@@ -42,27 +42,43 @@ App = {
 
   bindEvents: function() {
 
-    $(document).on('click', '#submit_btn', function()
-	{
-		var val = $('#guess').val();
-		App.submit(val);
-	});
-  console.log($('#guess').val());
+    //$(document).on('click', '#submit_btn', function()
+	//{
+		//var val = $('#guess').val();
+		//App.submit(val);
+	//});
+  //console.log($('#guess').val());
+
+	App.getPrice();
+
+	
+
   },
 
-  submit: function(s) {
-	App.contracts.Lottery.deployed().then(function(instance){
-		lotteryInstance = instance;
-		return lotteryInstance.submit.call(s);
-		}).then(function (value){
-			return lotteryInstance.submit.sendTransaction("583f4f71b32721321fd0f20e674c3938142ce9f243e802c16cfc4def7d2dc523",
-				{
-				from: web3.eth.coinbase,
-				value: 1000,
-				gas: 180000
-					})
-		})		
-  },
+  //submit: function(s) {
+	//App.contracts.Lottery.deployed().then(function(instance){
+		//lotteryInstance = instance;
+		//return lotteryInstance.submit.call(s);
+		//}).then(function (value){
+			//return lotteryInstance.submit.sendTransaction("583f4f71b32721321fd0f20e674c3938142ce9f243e802c16cfc4def7d2dc523",
+				//{
+				//from: web3.eth.coinbase,
+				//value: 1000,
+				//gas: 180000
+					//})
+		//})		
+  //},
+  
+
+		getPrice: function() {
+			App.contracts.Lottery.deployed().then(function(instance){
+				lotteryInstance = instance;
+				return lotteryInstance.price.call()
+				}).then(function (value){
+					console.log(value);
+							})
+		  },
+
 
 
 
